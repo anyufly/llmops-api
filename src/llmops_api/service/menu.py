@@ -1,5 +1,5 @@
 from contextlib import AbstractAsyncContextManager
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 
 from loguru._logger import Logger
 from sqlalchemy.ext.asyncio import AsyncSession
