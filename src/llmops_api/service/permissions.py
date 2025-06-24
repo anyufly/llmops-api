@@ -265,3 +265,15 @@ class PermissionsService:
                 )
                 permissions_map[menu_id] = parent_permission
             return ListViewModel[PermissionViewModel](items=list(permissions_map.values()))
+
+    async def has_permission(self, user_id: int, path: str, method: str) -> bool:
+        permissions = await self.casbin_enforcer.enforcer.get_implicit_permissions_for_user(
+            f"user::{user_id}"
+        )
+
+        for permission in permissions:
+            _, _path, _method = permission
+
+            if path == _path and _method == method:
+                return True
+        return False
