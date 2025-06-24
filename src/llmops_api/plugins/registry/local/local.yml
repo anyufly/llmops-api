@@ -1,0 +1,6 @@
+name: local
+description: 本地提供的工具
+tools:
+ - now
+ - random_int
+ - uuid

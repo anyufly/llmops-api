@@ -1,0 +1,10 @@
+name: now
+title: 时间
+description: 这是一个用于获取当前时间的工具
+provider: local
+args: []
+create_at: 1749002791.805383
+update_at: 1749002791.805383
+creator: system
+publisher: system
+publish_at: 1749002791.805383

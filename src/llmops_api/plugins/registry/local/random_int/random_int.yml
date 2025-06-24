@@ -1,0 +1,18 @@
+name: random_int
+title: 生成随机整数
+description: 这是一个用于生成[start,end]之间（包含start和end）随机整数的工具。
+provider: local
+args:
+ - name: 开始
+   type: int
+   require: true
+   description: 表示随机整数生成区间的开始整数
+ - name: 结束
+   type: int
+   require: true
+   description: 表示随机整数生成区间的开始整数
+create_at: 1749002791.805383
+update_at: 1749002791.805383
+creator: system
+publisher: system
+publish_at: 1749002791.805383
