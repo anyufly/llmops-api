@@ -1,6 +1,0 @@
-name: generate_uuid
-title: 生成UUID
-description: 这是一个用于生成[start,end]之间（包含start和end）随机整数的工具。
-provider: local
-args: []
-creator: system
