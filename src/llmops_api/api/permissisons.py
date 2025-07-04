@@ -82,7 +82,7 @@ async def add_role_for_user(
         add_user_role_form.user_id, add_user_role_form.role_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="添加用户角色成功")
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="添加用户角色成功")  # type: ignore
 
 
 @router.delete(
@@ -102,7 +102,7 @@ async def delete_role_for_user(
         delete_user_role_form.user_id, delete_user_role_form.role_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除用户角色成功")
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除用户角色成功")  # type: ignore
 
 
 @router.post(
@@ -122,7 +122,7 @@ async def add_action_for_role(
         add_role_action_form.role_id, add_role_action_form.action_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="添加角色权限成功")
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="添加角色权限成功")  # type: ignore
 
 
 @router.delete(
@@ -142,7 +142,7 @@ async def delete_action_for_role(
         delete_role_action_form.role_id, delete_role_action_form.action_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除角色权限成功")
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除角色权限成功")  # type: ignore
 
 
 @router.get(

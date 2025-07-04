@@ -107,6 +107,7 @@ def init_container():
         packages=[
             "llmops_api.api",
             "llmops_api.depends",
+            "llmops_api.tasks",
         ],
     )
     return container

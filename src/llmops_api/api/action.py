@@ -45,7 +45,7 @@ async def delete_action(
     action_id: Annotated[int, Path(description="操作ID")],
 ):
     await action_service.delete_action(action_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除操作成功", data={})
+    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除操作成功", data={})  # type: ignore
 
 
 @router.put(

@@ -13,10 +13,10 @@ from llmops_api.base.routers import add_routers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger = app.container.logger()
-    db = app.container.db()
-    casbin_enforcer: enforcer.CasbinEnforcer = await app.container.casbin_enforcer()
-    redis = app.container.redis()
+    logger = app.container.logger()  # type: ignore
+    db = app.container.db()  # type: ignore
+    casbin_enforcer: enforcer.CasbinEnforcer = await app.container.casbin_enforcer()  # type: ignore
+    redis = app.container.redis()  # type: ignore
 
     yield
     logger.info("start close db engine...")
@@ -40,7 +40,7 @@ app = FastAPI(
 )
 
 
-app.container = container
+app.container = container  # type: ignore
 
 app.add_middleware(
     CORSMiddleware,

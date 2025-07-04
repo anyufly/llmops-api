@@ -25,7 +25,7 @@ async def add_user(
         UserService,
         Depends(Provide["user_module.user_service"]),
     ],
-    current_user_id: Annotated[UserViewModel, Depends(get_current_user_id)],
+    current_user_id: Annotated[int, Depends(get_current_user_id)],
     add_user_form: AddUserForm,
 ):
     user = add_user_form.convert_to_user()
@@ -63,7 +63,7 @@ async def delete_user(
     current_user_id: Annotated[int, Depends(get_current_user_id)],
 ):
     await user_service.delete_user(user_id, current_user_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除成功", data={})
+    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除成功", data={})  # type: ignore
 
 
 @router.put(

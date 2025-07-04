@@ -92,4 +92,4 @@ async def delete_role(
     role_id: Annotated[int, Path(description="角色ID")],
 ):
     await role_service.delete_role(role_id, delete_by=current_user_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除角色成功")
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除角色成功")  # type: ignore

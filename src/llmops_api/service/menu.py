@@ -55,7 +55,7 @@ class MenuService:
 
             await self._check_menu_name_exists(session, menu.name)
             await self.menu_repo.add(session, menu)
-            return menu.to_pydantic(MenuViewModel)
+            return menu.to_pydantic(MenuViewModel)  # type: ignore
 
     async def delete_menu(self, menu_id: int, delete_by: int) -> None:
         async with self.transaction_factory() as session:
@@ -76,7 +76,7 @@ class MenuService:
 
             await self.menu_repo.remove_by_id(session, menu_id, delete_by=delete_by)
 
-    async def get_menu(self, menu_id: int) -> Menu:
+    async def get_menu(self, menu_id: int) -> MenuViewModel:
         async with self.transaction_factory() as session:
             menu = await self.menu_repo.get_by_id(
                 session,
@@ -87,7 +87,7 @@ class MenuService:
             if menu is None:
                 raise MenuNotExists
 
-            return menu.to_pydantic(MenuViewModel)
+            return menu.to_pydantic(MenuViewModel)  # type: ignore
 
     async def add_child_menu(self, parent_id: int, menu: Menu) -> MenuViewModel:
         menu.parent_id = parent_id
@@ -124,7 +124,7 @@ class MenuService:
             )
 
             first_level_menus = [menu.to_pydantic(MenuViewModel) for menu in first_level_menus]
-            first_level_menu_ids = [menu.id for menu in first_level_menus]
+            first_level_menu_ids = [menu.id for menu in first_level_menus]  # type: ignore
 
             _, second_level_menus = await self.menu_repo.fetch_list(
                 session,
@@ -146,6 +146,6 @@ class MenuService:
                 second_level_menu_dict[menu.parent_id].append(menu.to_pydantic(MenuViewModel))
 
             for menu in first_level_menus:
-                menu.children = second_level_menu_dict.get(menu.id)
+                menu.children = second_level_menu_dict.get(menu.id)  # type: ignore
 
-            return ListViewModel[MenuViewModel](items=first_level_menus)
+            return ListViewModel[MenuViewModel](items=first_level_menus)  # type: ignore
