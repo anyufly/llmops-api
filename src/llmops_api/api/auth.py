@@ -28,7 +28,7 @@ async def change_pass(
         change_pass_form.new_password,
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="修改用户密码成功")  # type: ignore
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="修改用户密码成功")
 
 
 @router.post("/login", description="登录", response_model=BaseResponse[TokensViewModel])
@@ -65,7 +65,7 @@ async def logout(
 ):
     logger.info(f"user {current_user_id} is logging out...")
     await auth_service.logout(logout_form.access_token, logout_form.refresh_token)
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="注销成功")  # type: ignore
+    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="注销成功")
 
 
 @router.get("/current_user", description="获取当前用户", response_model=BaseResponse[UserViewModel])

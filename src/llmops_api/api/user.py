@@ -63,7 +63,7 @@ async def delete_user(
     current_user_id: Annotated[int, Depends(get_current_user_id)],
 ):
     await user_service.delete_user(user_id, current_user_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除成功", data={})  # type: ignore
+    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除成功", data={})
 
 
 @router.put(

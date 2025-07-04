@@ -7,4 +7,4 @@ app.config_from_object("llmops_api.base.celery.config")
 
 container = init_container()
 
-app.container = container  # type: ignore
+app.container = container

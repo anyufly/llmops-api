@@ -7,7 +7,7 @@ from llmops_api.base.config.config import RedisConfig
 
 class Redis:
     def __init__(self, config: RedisConfig):
-        self._pool = redis.ConnectionPool.from_url(config.url)  # type: ignore
+        self._pool = redis.ConnectionPool.from_url(config.url)
 
     async def close(self):
         await self._pool.aclose()

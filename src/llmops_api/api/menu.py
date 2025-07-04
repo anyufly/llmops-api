@@ -121,4 +121,4 @@ async def delete_menu(
     menu_id: Annotated[int, Path(description="菜单ID")],
 ):
     await menu_service.delete_menu(menu_id, delete_by=current_user_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除菜单成功", data={})  # type: ignore
+    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除菜单成功", data={})

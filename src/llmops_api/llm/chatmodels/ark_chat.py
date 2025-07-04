@@ -356,7 +356,7 @@ class ArkChatModel(BaseChatModel):
 
             if is_pydantic_schema:
                 output_parser: OutputParserLike = PydanticToolsParser(
-                    tools=[schema],  # type: ignore[list-item]
+                    tools=[schema],
                     first_tool_only=True,
                 )
             else:
@@ -372,7 +372,7 @@ class ArkChatModel(BaseChatModel):
         elif method == "json_mode":
             llm = self.bind(response_format={"type": "json_object"})
             output_parser = (
-                PydanticOutputParser(pydantic_object=schema)  # type: ignore[arg-type]
+                PydanticOutputParser(pydantic_object=schema)
                 if is_pydantic_schema
                 else JsonOutputParser()
             )
@@ -384,7 +384,7 @@ class ArkChatModel(BaseChatModel):
                     "type": "json_schema",
                     "json_schema": {
                         "name": key_name,
-                        "schema": schema.model_json_schema(),  # type: ignore
+                        "schema": schema.model_json_schema(),
                         "strict": True,
                     },
                 }
@@ -393,7 +393,7 @@ class ArkChatModel(BaseChatModel):
 
             llm = self.bind(response_format=response_format)
             output_parser = (
-                PydanticOutputParser(pydantic_object=schema)  # type: ignore[arg-type]
+                PydanticOutputParser(pydantic_object=schema)
                 if is_pydantic_schema
                 else JsonOutputParser()
             )

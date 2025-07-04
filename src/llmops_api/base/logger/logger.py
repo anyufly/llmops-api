@@ -105,4 +105,4 @@ def init_logger(level: str, debug: bool) -> Logger:
         level=level,
     )
 
-    return logger  # type: ignore
+    return logger

@@ -42,7 +42,7 @@ class FromEnvBase(BaseModel):
     def from_env(cls):
         value_dict = {}
         for field_name, field_info in cls.model_fields.items():
-            if issubclass(field_info.annotation, FromEnvBase):  # type: ignore
+            if issubclass(field_info.annotation, FromEnvBase):
                 value_dict[field_name] = field_info.annotation.from_env()
             for meta in field_info.metadata:
                 if isinstance(meta, EnvFiled):
@@ -66,7 +66,7 @@ class ConfigBase(BaseModel):
             if data.get(field_name) is None:
                 # 优先使用 default_factory
                 if field_info.default_factory is not None:
-                    data[field_name] = field_info.default_factory()  # type: ignore
+                    data[field_name] = field_info.default_factory()
                 # 使用静态默认值
                 elif field_info.default is not None:
                     data[field_name] = field_info.default
