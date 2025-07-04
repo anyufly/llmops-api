@@ -1,12 +1,6 @@
 from dependency_injector import providers
 from dependency_injector.containers import DeclarativeContainer
 
-from llmops_api.api.container.action import Container as ActionContainer
-from llmops_api.api.container.auth import Container as AuthContainer
-from llmops_api.api.container.menu import Container as MenuContainer
-from llmops_api.api.container.permissions import Container as PermissionsContainer
-from llmops_api.api.container.role import Container as RoleContainer
-from llmops_api.api.container.user import Container as UserContainer
 from llmops_api.base.casbin.adapter import CasbinAdapter
 from llmops_api.base.casbin.enforcer import new_casbin_enforcer
 from llmops_api.base.casbin.watcher import new_watcher
@@ -14,6 +8,12 @@ from llmops_api.base.config import load_config
 from llmops_api.base.db.engine import Database
 from llmops_api.base.logger import init_logger
 from llmops_api.base.redis.pool import Redis
+from llmops_api.container.action import Container as ActionContainer
+from llmops_api.container.auth import Container as AuthContainer
+from llmops_api.container.menu import Container as MenuContainer
+from llmops_api.container.permissions import Container as PermissionsContainer
+from llmops_api.container.role import Container as RoleContainer
+from llmops_api.container.user import Container as UserContainer
 from llmops_api.repo.action import ActionRepo
 from llmops_api.repo.menu import MenuRepo
 
