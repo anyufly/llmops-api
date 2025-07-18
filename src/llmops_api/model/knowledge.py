@@ -21,8 +21,13 @@ class Knowledge(Base, AutoIncrementID, OperateRecord):
 
 class KnowledgeDocument(Base, AutoIncrementID, OperateRecord):
     name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    activate_status: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+    activate_status: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false", default=False
+    )
     process_id: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+    process_status: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="false", default=False
+    )
     knowledge_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("t_knowledge.id"),
@@ -73,7 +78,7 @@ class RetrievalRecordChunks(Base, AutoIncrementID):
     )
 
     # 被召回时的文本
-    chunck_text: Mapped[str] = mapped_column(
+    chunk_text: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )

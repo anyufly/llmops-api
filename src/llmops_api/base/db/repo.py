@@ -70,6 +70,142 @@ class RepoException(Exception):
         super().__init__(*args, **kwargs)
 
 
+class SyncBaseRepo(Generic[ModelT]):
+    def __init__(self, logger: Logger):
+        self.logger = logger
+
+    def _check_type_arg(self) -> None:
+        self._type_arg = None
+        for base in getattr(self, "__orig_bases__", []):
+            if args := get_args(base):
+                self._type_arg = args[0]
+        if self._type_arg is None:
+            raise TypeError("No generic type found")
+
+    def add(self, session: AsyncSession, model: ModelT) -> None:
+        self._check_type_arg()
+
+        session.add(model)
+        session.flush()
+
+    def insert(self, session: AsyncSession, **kwargs) -> None:
+        self._check_type_arg()
+        session.execute(insert(self._type_arg).values(**kwargs))
+
+    def exists_when(self, session: AsyncSession, condition: Condition) -> bool:
+        self._check_type_arg()
+
+        stmt = select(func.count("*")).where(*condition.to_condition())
+        if issubclass(self._type_arg, SoftDelete):
+            stmt = stmt.where(self._type_arg.delete_at.is_(None))
+        count = session.scalar(stmt)
+
+        return count > 0
+
+    def exists(self, session: AsyncSession, id: int) -> bool:
+        self._check_type_arg()
+
+        if id <= 0:
+            raise ValueError("id must be positive")
+
+        if issubclass(self._type_arg, AutoIncrementID):
+            stmt = select(func.count(self._type_arg.id)).where(self._type_arg.id == id)
+
+            if issubclass(self._type_arg, SoftDelete):
+                stmt = stmt.where(self._type_arg.delete_at.is_(None))
+
+            count = session.scalar(stmt)
+            return count > 0
+        else:
+            raise RepoException("only support the model that extends AutoIncrementID")
+
+    def get_by_id(
+        self,
+        session: AsyncSession,
+        id: int,
+        *,
+        options: List[ExecutableOption] = [],
+    ) -> ModelT:
+        self._check_type_arg()
+
+        if id <= 0:
+            raise ValueError("id must be positive")
+
+        if issubclass(self._type_arg, AutoIncrementID):
+            stmt = select(self._type_arg)
+
+            if len(options) > 0:
+                stmt = stmt.options(*options)
+            stmt = stmt.where(self._type_arg.id == id)
+            if issubclass(self._type_arg, SoftDelete):
+                stmt = stmt.where(self._type_arg.delete_at.is_(None))
+
+            result = session.scalars(stmt)
+            return result.one_or_none()
+        else:
+            raise RepoException("only support the model that extends AutoIncrementID")
+
+    def update_by_id(self, session: AsyncSession, id: int, **kwargs: Any) -> None:
+        self._check_type_arg()
+        session.execute(update(self._type_arg).where(self._type_arg.id == id).values(**kwargs))
+
+    def fetch_list(
+        self,
+        session: AsyncSession,
+        query_config: QueryConfig,
+    ) -> Tuple[Optional[int], List[ModelT]]:
+        self._check_type_arg()
+
+        stmt = select(self._type_arg)
+
+        if len(query_config.options) > 0:
+            stmt = stmt.options(*query_config.options)
+
+        if query_config.paginator is not None:
+            count_stmt = select(func.count("*"))
+            if query_config.condition is not None:
+                count_stmt = count_stmt.where(*query_config.condition.to_condition())
+                stmt = stmt.where(*query_config.condition.to_condition())
+
+            if issubclass(self._type_arg, SoftDelete):
+                count_stmt = count_stmt.where(self._type_arg.delete_at.is_(None))
+                stmt = stmt.where(self._type_arg.delete_at.is_(None))
+
+            count = session.scalar(count_stmt)
+            model_list = []
+            if count > 0:
+                stmt = stmt.offset(
+                    query_config.paginator.page_size * (query_config.paginator.page - 1)
+                ).limit(query_config.paginator.page_size)
+                if len(query_config.order_by) > 0:
+                    stmt = stmt.order_by(*query_config.order_by)
+                model_list = session.scalars(stmt)
+            return count, list(model_list)
+        else:
+            if query_config.condition is not None:
+                stmt = stmt.where(*query_config.condition.to_condition())
+
+            if issubclass(self._type_arg, SoftDelete):
+                stmt = stmt.where(self._type_arg.delete_at.is_(None))
+
+            if len(query_config.order_by) > 0:
+                stmt = stmt.order_by(*query_config.order_by)
+            model_list = session.scalars(stmt)
+            return None, list(model_list)
+
+    def remove_by_id(self, session: AsyncSession, id: int, delete_by: Optional[int] = None) -> None:
+        self._check_type_arg()
+
+        if issubclass(self._type_arg, SoftDelete):
+            values = {"delete_at": datetime.datetime.now()}
+
+            if delete_by is not None:
+                values.update({"delete_by": delete_by})
+            session.execute(update(self._type_arg).where(self._type_arg.id == id).values(**values))
+        else:
+            session.execute(delete(self._type_arg).where(self._type_arg.id == id))
+
+
 class BaseRepo(Generic[ModelT]):
     def __init__(self, logger: Logger):
         self.logger = logger

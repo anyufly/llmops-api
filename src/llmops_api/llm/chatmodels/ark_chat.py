@@ -233,20 +233,19 @@ class ArkChatModel(BaseChatModel):
 
         stream: Stream[ChatCompletionChunk] = self.client.create(**params)
         for chunk in stream:
-            for choice in chunk.choices:
-                ai_message_chunk = convert_to_ai_message_chunk(choice.delta)
-                generation_info = (
-                    {
-                        "finish_reason": choice.finish_reason,
-                    }
-                    if choice.finish_reason
-                    else None
-                )
-                cg_chunk = ChatGenerationChunk(
-                    message=ai_message_chunk,
-                    generation_info=generation_info,
-                )
-                yield cg_chunk
+            choice = chunk.choices[0]
+            ai_message_chunk = convert_to_ai_message_chunk(choice.delta)
+            generation_info = {
+                "finish_reason": choice.finish_reason,
+                "logprobs": choice.logprobs,
+                "token_usage": chunk.usage,
+                "model_name": self.model_name,
+            }
+            cg_chunk = ChatGenerationChunk(
+                message=ai_message_chunk,
+                generation_info=generation_info,
+            )
+            yield cg_chunk
 
     async def _agenerate(
         self,
@@ -302,20 +301,19 @@ class ArkChatModel(BaseChatModel):
 
         stream: AsyncStream[ChatCompletionChunk] = await self.async_client.create(**params)
         async for chunk in stream:
-            for choice in chunk.choices:
-                ai_message_chunk = convert_to_ai_message_chunk(choice.delta)
-                generation_info = (
-                    {
-                        "finish_reason": choice.finish_reason,
-                    }
-                    if choice.finish_reason
-                    else None
-                )
-                cg_chunk = ChatGenerationChunk(
-                    message=ai_message_chunk,
-                    generation_info=generation_info,
-                )
-                yield cg_chunk
+            choice = chunk.choices[0]
+            ai_message_chunk = convert_to_ai_message_chunk(choice.delta)
+            generation_info = {
+                "finish_reason": choice.finish_reason,
+                "logprobs": choice.logprobs,
+                "token_usage": chunk.usage,
+                "model_name": self.model_name,
+            }
+            cg_chunk = ChatGenerationChunk(
+                message=ai_message_chunk,
+                generation_info=generation_info,
+            )
+            yield cg_chunk
 
     def bind_tools(
         self,
