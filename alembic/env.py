@@ -51,7 +51,7 @@ def pg_schema():
 
 if load_from_env():
     database_config = DatabaseConfig.from_env()
-    config.set_main_option("sqlalchemy.url", database_config.url)  # type: ignore
+    config.set_main_option("sqlalchemy.url", database_config.url)
 
 
 # add your model's MetaData object here

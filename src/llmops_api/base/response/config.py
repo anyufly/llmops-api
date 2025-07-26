@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from fastapi import status
 
 from llmops_api.base.response.base_response import (
@@ -8,7 +10,7 @@ from llmops_api.base.response.base_response import (
     ValidateErrorResponse,
 )
 
-responses = {
+responses: Dict[int | str, Dict[str, Any]] = {
     "default": {},
     status.HTTP_400_BAD_REQUEST: {
         "model": ValidateErrorResponse,
