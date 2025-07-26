@@ -1,9 +1,10 @@
 from enum import Enum
+from typing import Any
 
 
 class BaseEnum(Enum):
     @classmethod
-    def load(cls, value):
+    def load(cls, value: Any):
         """
         通过值获取枚举成员
 
@@ -17,7 +18,7 @@ class BaseEnum(Enum):
         raise ValueError(f"值 '{value}' 在枚举 {cls.__name__} 中未找到")
 
     @classmethod
-    def load_by_name(cls, name):
+    def load_by_name(cls, name: str):
         """
         通过枚举项的名称获取枚举成员
 
@@ -37,7 +38,7 @@ class LabeledEnum(BaseEnum):
     label用于描述枚举项，可通过to_dict_list方法转换为字典数组。
     """
 
-    def __init__(self, value, label):
+    def __init__(self, value: Any, label: str):
         """
         初始化枚举项，保存value和label
         :param value: 枚举项的值

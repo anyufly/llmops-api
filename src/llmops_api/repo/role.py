@@ -31,7 +31,7 @@ class FindRoleByQuery(Condition):
         if self.query and self.query != "":
             return [or_(Role.name.like(f"{self.query}%"), Role.title.like(f"{self.query}%"))]
 
-        return [True]
+        return [True]  # type: ignore
 
 
 class RoleRepo(BaseRepo[Role]):

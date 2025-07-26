@@ -3,7 +3,7 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Path, Query
 
-from llmops_api.base.response.base_response import Base, BaseResponse
+from llmops_api.base.response.base_response import BaseResponse, Empty
 from llmops_api.base.view.model import ListViewModel
 from llmops_api.const.constant import SUCCESS_CODE
 from llmops_api.depends.auth import get_current_user_id
@@ -82,7 +82,7 @@ async def edit_role(
 
 @router.delete(
     "/{role_id}",
-    response_model=BaseResponse[Base],
+    response_model=BaseResponse[Empty],
     description="删除角色",
 )
 @inject
@@ -92,4 +92,4 @@ async def delete_role(
     role_id: Annotated[int, Path(description="角色ID")],
 ):
     await role_service.delete_role(role_id, delete_by=current_user_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除角色成功")
+    return BaseResponse[Empty](code=SUCCESS_CODE, data=Empty(), msg="删除角色成功")

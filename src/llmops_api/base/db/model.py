@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, List, Optional, Set, Type
+from typing import Any, Dict, List, Optional, Set, Type, cast
 
 import stringcase
 from pydantic import BaseModel
@@ -208,10 +208,11 @@ class User(Base, AutoIncrementID, OperateRecord, SoftDelete):
         nullable=False,
     )
 
-    def __init__(self, **kw):
-        password = kw.get("password")
-        salt, hashed_password = sha256_with_salt(password)
-        kw.update({"password": hashed_password, "password_salt": salt})
+    def __init__(self, **kw: Any):
+        password = kw.get("password", None)
+        if password:
+            salt, hashed_password = sha256_with_salt(password)
+            kw.update({"password": hashed_password, "password_salt": salt})
         super().__init__(**kw)
 
     def set_password(self, password: str):
@@ -230,13 +231,13 @@ class CasbinRule(Base, AutoIncrementID):
     def __tablename__(cls) -> str:
         return "casbin_rule"
 
-    ptype: Mapped[str] = mapped_column(String(255), nullable=True)
-    v0: Mapped[str] = mapped_column(String(255), nullable=True)
-    v1: Mapped[str] = mapped_column(String(255), nullable=True)
-    v2: Mapped[str] = mapped_column(String(255), nullable=True)
-    v3: Mapped[str] = mapped_column(String(255), nullable=True)
-    v4: Mapped[str] = mapped_column(String(255), nullable=True)
-    v5: Mapped[str] = mapped_column(String(255), nullable=True)
+    ptype: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    v0: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    v1: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    v2: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    v3: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    v4: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    v5: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     def __str__(self):
         arr = [self.ptype]
@@ -244,7 +245,7 @@ class CasbinRule(Base, AutoIncrementID):
             if v is None:
                 break
             arr.append(v)
-        return ", ".join(arr)
+        return ", ".join(cast(List[str], arr))
 
     def __repr__(self):
         return '<CasbinRule {}: "{}">'.format(self.id, str(self))

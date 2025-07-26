@@ -3,7 +3,7 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Path, Query
 
-from llmops_api.base.response.base_response import Base, BaseResponse
+from llmops_api.base.response.base_response import BaseResponse, Empty
 from llmops_api.base.view.model import PaginationListViewModel
 from llmops_api.const.constant import SUCCESS_CODE
 from llmops_api.depends.auth import get_current_user_id
@@ -52,7 +52,7 @@ async def get_user(
     return BaseResponse[UserViewModel](code=SUCCESS_CODE, msg="成功", data=user)
 
 
-@router.delete("/{user_id}", description="删除用户", response_model=BaseResponse[Base])
+@router.delete("/{user_id}", description="删除用户", response_model=BaseResponse[Empty])
 @inject
 async def delete_user(
     user_service: Annotated[
@@ -63,7 +63,7 @@ async def delete_user(
     current_user_id: Annotated[int, Depends(get_current_user_id)],
 ):
     await user_service.delete_user(user_id, current_user_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除成功", data={})
+    return BaseResponse[Empty](code=SUCCESS_CODE, msg="删除成功", data=Empty())
 
 
 @router.put(

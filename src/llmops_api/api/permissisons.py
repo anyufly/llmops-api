@@ -4,7 +4,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Path, Query
 
 from llmops_api.base.db.repo import Paginator
-from llmops_api.base.response.base_response import Base, BaseResponse
+from llmops_api.base.response.base_response import BaseResponse, Empty
 from llmops_api.base.view.model import ListViewModel, PaginationListViewModel
 from llmops_api.const.constant import SUCCESS_CODE
 from llmops_api.depends.auth import get_current_user_id
@@ -69,7 +69,7 @@ async def get_role_users(
     "/role_user",
     dependencies=[Depends(get_current_user_id)],
     description="添加角色用户",
-    response_model=BaseResponse[Base],
+    response_model=BaseResponse[Empty],
 )
 @inject
 async def add_role_for_user(
@@ -82,14 +82,14 @@ async def add_role_for_user(
         add_user_role_form.user_id, add_user_role_form.role_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="添加用户角色成功")
+    return BaseResponse[Empty](code=SUCCESS_CODE, data=Empty(), msg="添加用户角色成功")
 
 
 @router.delete(
     "/role_user",
     dependencies=[Depends(get_current_user_id)],
     description="删除角色用户",
-    response_model=BaseResponse[Base],
+    response_model=BaseResponse[Empty],
 )
 @inject
 async def delete_role_for_user(
@@ -102,14 +102,14 @@ async def delete_role_for_user(
         delete_user_role_form.user_id, delete_user_role_form.role_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除用户角色成功")
+    return BaseResponse[Empty](code=SUCCESS_CODE, data=Empty(), msg="删除用户角色成功")
 
 
 @router.post(
     "/role_action",
     dependencies=[Depends(get_current_user_id)],
     description="添加角色权限",
-    response_model=BaseResponse[Base],
+    response_model=BaseResponse[Empty],
 )
 @inject
 async def add_action_for_role(
@@ -122,14 +122,14 @@ async def add_action_for_role(
         add_role_action_form.role_id, add_role_action_form.action_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="添加角色权限成功")
+    return BaseResponse[Empty](code=SUCCESS_CODE, data=Empty(), msg="添加角色权限成功")
 
 
 @router.delete(
     "/role_action",
     dependencies=[Depends(get_current_user_id)],
     description="删除角色权限",
-    response_model=BaseResponse[Base],
+    response_model=BaseResponse[Empty],
 )
 @inject
 async def delete_action_for_role(
@@ -142,7 +142,7 @@ async def delete_action_for_role(
         delete_role_action_form.role_id, delete_role_action_form.action_id
     )
 
-    return BaseResponse[Base](code=SUCCESS_CODE, data={}, msg="删除角色权限成功")
+    return BaseResponse[Empty](code=SUCCESS_CODE, data=Empty(), msg="删除角色权限成功")
 
 
 @router.get(

@@ -4,11 +4,11 @@ from pydantic import BaseModel, Field
 from typing_extensions import TypeVar
 
 
-class Base(BaseModel):
+class Empty(BaseModel):
     pass
 
 
-DataT = TypeVar("DataT", default=Base)
+DataT = TypeVar("DataT", default=Empty)
 
 
 class BaseResponse(BaseModel, Generic[DataT]):
@@ -30,7 +30,7 @@ class ValidateErrorData(BaseModel):
 
 
 ValidateErrorResponse = BaseResponse[ValidateErrorData]
-ServerInternalErrorResponse = BaseResponse[Base]
-ForbiddenResponse = BaseResponse[Base]
-UnAuthorizedResponse = BaseResponse[Base]
-NotFoundResponse = BaseResponse[Base]
+ServerInternalErrorResponse = BaseResponse[Empty]
+ForbiddenResponse = BaseResponse[Empty]
+UnAuthorizedResponse = BaseResponse[Empty]
+NotFoundResponse = BaseResponse[Empty]

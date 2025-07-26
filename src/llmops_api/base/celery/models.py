@@ -1,6 +1,8 @@
-from pydantic import BaseModel,RootModel, Field
-from typing import Optional, List
+from typing import List, Optional
+
 from langchain_core.documents.base import Document
+from pydantic import BaseModel, Field, RootModel
+
 
 class DocumentFile(BaseModel):
     knowledge_id: int

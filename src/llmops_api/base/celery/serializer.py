@@ -6,7 +6,7 @@ from kombu.serialization import register
 from pydantic import BaseModel, RootModel
 
 
-def get_import_path(obj) -> tuple[Any, Any | None]:
+def get_import_path(obj: Any) -> tuple[Any, Any | None]:
     # 获取对象所属的模块名
     module = obj.__module__
     # 获取对象的类名或函数名
@@ -15,7 +15,7 @@ def get_import_path(obj) -> tuple[Any, Any | None]:
     return module, name
 
 
-def default(obj):
+def default(obj: Any):
     if isinstance(obj, BaseModel):
         module, name = get_import_path(type(obj))
         return {
@@ -27,7 +27,7 @@ def default(obj):
     return obj
 
 
-def decode(obj):
+def decode(obj: Any):
     if "__pydantic__" in obj:
         module = obj["module"]
         name = obj["name"]
@@ -42,11 +42,11 @@ def decode(obj):
     return obj
 
 
-def serialize(obj):
+def serialize(obj: Any):
     return msgpack.packb(obj, use_bin_type=True, default=default)
 
 
-def deserialize(data):
+def deserialize(data: Any):
     return msgpack.unpackb(data, raw=False, object_hook=decode)
 
 

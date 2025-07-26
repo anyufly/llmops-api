@@ -11,6 +11,7 @@ from typing import (
     Sequence,
     Type,
     Union,
+    cast,
 )
 
 from httpx import Timeout
@@ -54,6 +55,7 @@ from volcenginesdkarkruntime.types.chat.chat_completion_named_tool_choice_param 
     ChatCompletionNamedToolChoiceParam,
     Function,
 )
+from volcenginesdkarkruntime.types.completion_usage import CompletionUsage
 
 from llmops_api.const.constant import DEFAULT_ARK_MAX_RETRIES, DEFAULT_ARK_TIMEOUT
 
@@ -61,7 +63,7 @@ from llmops_api.const.constant import DEFAULT_ARK_MAX_RETRIES, DEFAULT_ARK_TIMEO
 def convert_to_ai_message(message: ChatCompletionMessage) -> AIMessage:
     content = message.content or ""
 
-    additional_kwargs: Dict = {}
+    additional_kwargs: Dict[str, Any] = {}
 
     if tool_calls := message.tool_calls:
         additional_kwargs["tool_calls"] = [tool_call.model_dump() for tool_call in tool_calls]
@@ -73,7 +75,7 @@ def convert_to_ai_message(message: ChatCompletionMessage) -> AIMessage:
 def convert_to_ai_message_chunk(delta: ChoiceDelta) -> AIMessageChunk:
     content = delta.content or ""
 
-    additional_kwargs: Dict = {}
+    additional_kwargs: Dict[str, Any] = {}
 
     if delta.tool_calls:
         additional_kwargs["tool_calls"] = [tool_call.model_dump() for tool_call in delta.tool_calls]
@@ -121,7 +123,7 @@ class ArkChatModel(BaseChatModel):
     @property
     def _default_params(self) -> Dict[str, Any]:
         """Get the default parameters for calling Qianfan API."""
-        normal_params = {
+        normal_params: Dict[str, Any] = {
             "model": self.model_name,
             "stream": self.streaming,
             "top_p": self.top_p,
@@ -134,7 +136,7 @@ class ArkChatModel(BaseChatModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_environment(cls, values: Dict) -> Any:
+    def validate_environment(cls, values: Dict[str, Any]) -> Any:
         values["ark_api_key"] = convert_to_secret_str(
             get_from_dict_or_env(values, ["ark_api_key"], "ARK_API_KEY", default="")
         )
@@ -147,7 +149,7 @@ class ArkChatModel(BaseChatModel):
 
         default_values.update(values)
 
-        params = {
+        params: Dict[str, Any] = {
             **values.get("init_kwargs", {}),
             "timeout": default_values.get("timeout"),
         }
@@ -187,16 +189,21 @@ class ArkChatModel(BaseChatModel):
             return generate_from_stream(stream_iter)
 
         message_dicts = self._create_message_dicts(messages)
-        params = {"stop": stop, **self._default_params, **kwargs, "messages": message_dicts}
+        params: Dict[str, Any] = {
+            "stop": stop,
+            **self._default_params,
+            **kwargs,
+            "messages": message_dicts,
+        }
         response = self.client.create(**params)
         return self._create_chat_result(response)
 
     def _create_chat_result(self, response: ChatCompletion) -> ChatResult:
-        generations = []
+        generations: List[ChatGeneration] = []
 
         for res in response.choices:
             message = convert_to_ai_message(res.message)
-            generation_info = {
+            generation_info: Dict[str, Any] = {
                 "finish_reason": res.finish_reason,
                 "logprobs": res.logprobs,
             }
@@ -207,8 +214,8 @@ class ArkChatModel(BaseChatModel):
             )
             generations.append(gen)
 
-        token_usage = response.usage or {}
-        llm_output = {"token_usage": token_usage, "model_name": self.model_name}
+        token_usage: CompletionUsage | Dict[str, Any] = response.usage or {}
+        llm_output: Dict[str, Any] = {"token_usage": token_usage, "model_name": self.model_name}
         return ChatResult(generations=generations, llm_output=llm_output)
 
     @staticmethod
@@ -223,7 +230,7 @@ class ArkChatModel(BaseChatModel):
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         message_dicts = self._create_message_dicts(messages)
-        params = {
+        params: Dict[str, Any] = {
             "stop": stop,
             **self._default_params,
             **kwargs,
@@ -235,7 +242,7 @@ class ArkChatModel(BaseChatModel):
         for chunk in stream:
             choice = chunk.choices[0]
             ai_message_chunk = convert_to_ai_message_chunk(choice.delta)
-            generation_info = {
+            generation_info: Dict[str, Any] = {
                 "finish_reason": choice.finish_reason,
                 "logprobs": choice.logprobs,
                 "token_usage": chunk.usage,
@@ -279,7 +286,12 @@ class ArkChatModel(BaseChatModel):
             )
 
         message_dicts = self._create_message_dicts(messages)
-        params = {"stop": stop, **self._default_params, **kwargs, "messages": message_dicts}
+        params: Dict[str, Any] = {
+            "stop": stop,
+            **self._default_params,
+            **kwargs,
+            "messages": message_dicts,
+        }
         response = await self.async_client.create(**params)
         return self._create_chat_result(response)
 
@@ -291,7 +303,7 @@ class ArkChatModel(BaseChatModel):
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
         message_dicts = self._create_message_dicts(messages)
-        params = {
+        params: Dict[str, Any] = {
             "stop": stop,
             **self._default_params,
             **kwargs,
@@ -303,7 +315,7 @@ class ArkChatModel(BaseChatModel):
         async for chunk in stream:
             choice = chunk.choices[0]
             ai_message_chunk = convert_to_ai_message_chunk(choice.delta)
-            generation_info = {
+            generation_info: Dict[str, Any] = {
                 "finish_reason": choice.finish_reason,
                 "logprobs": choice.logprobs,
                 "token_usage": chunk.usage,
@@ -338,12 +350,12 @@ class ArkChatModel(BaseChatModel):
 
     def with_structured_output(
         self,
-        schema: Union[Dict, Type[BaseModel]],  # noqa: UP006
+        schema: Union[Dict[str, Any], Type[BaseModel]],  # noqa: UP006
         *,
         method: Literal["function_calling", "json_mode", "json_schema"] = "function_calling",
         include_raw: bool = False,
         **kwargs: Any,
-    ) -> Runnable[LanguageModelInput, Union[Dict, BaseModel]]:
+    ) -> Runnable[LanguageModelInput, Union[Dict[str, Any], BaseModel]]:
         if kwargs:
             raise ValueError(f"Received unsupported arguments {kwargs}")
 
@@ -354,7 +366,7 @@ class ArkChatModel(BaseChatModel):
 
             if is_pydantic_schema:
                 output_parser: OutputParserLike = PydanticToolsParser(
-                    tools=[schema],
+                    tools=[cast(type[BaseModel], schema)],
                     first_tool_only=True,
                 )
             else:
@@ -370,7 +382,7 @@ class ArkChatModel(BaseChatModel):
         elif method == "json_mode":
             llm = self.bind(response_format={"type": "json_object"})
             output_parser = (
-                PydanticOutputParser(pydantic_object=schema)
+                PydanticOutputParser(pydantic_object=cast(type[BaseModel], schema))
                 if is_pydantic_schema
                 else JsonOutputParser()
             )
@@ -382,16 +394,16 @@ class ArkChatModel(BaseChatModel):
                     "type": "json_schema",
                     "json_schema": {
                         "name": key_name,
-                        "schema": schema.model_json_schema(),
+                        "schema": cast(type[BaseModel], schema).model_json_schema(),
                         "strict": True,
                     },
                 }
             else:
-                response_format = schema
+                response_format = cast(Dict, schema)
 
             llm = self.bind(response_format=response_format)
             output_parser = (
-                PydanticOutputParser(pydantic_object=schema)
+                PydanticOutputParser(pydantic_object=cast(type[BaseModel], schema))
                 if is_pydantic_schema
                 else JsonOutputParser()
             )

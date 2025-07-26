@@ -18,7 +18,7 @@ async def need_permission(
     ],
 ):
     # 从请求的scope中获取路由对象
-    route: APIRoute = request.scope.get("route")
+    route: APIRoute = request.scope.get("route")  # type: ignore
 
     path = route.path
     method = request.method.upper()

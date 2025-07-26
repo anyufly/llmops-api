@@ -25,12 +25,12 @@ class BizError(Exception):
         errors = err.errors()
         data = []
 
-        for err in errors:
+        for errObj in errors:
             data.append(
                 {
-                    "loc": err.get("loc", ""),
-                    "input": err.get("input", ""),
-                    "reason": err.get("msg", ""),
+                    "loc": errObj.get("loc", ""),
+                    "input": errObj.get("input", ""),
+                    "reason": errObj.get("msg", ""),
                 }
             )
         return BadRequest.with_data({"errors": data})

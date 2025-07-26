@@ -17,6 +17,7 @@ from loguru._logger import Logger
 from pydantic import BaseModel, Field
 from sqlalchemy import delete, func, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from sqlalchemy.sql._typing import _ColumnExpressionArgument, _ColumnExpressionOrStrLabelArgument
 from sqlalchemy.sql.base import ExecutableOption, _NoArg
 
@@ -82,13 +83,13 @@ class SyncBaseRepo(Generic[ModelT]):
         if self._type_arg is None:
             raise TypeError("No generic type found")
 
-    def add(self, session: AsyncSession, model: ModelT) -> None:
+    def add(self, session: Session, model: ModelT) -> None:
         self._check_type_arg()
 
         session.add(model)
         session.flush()
 
-    def insert(self, session: AsyncSession, **kwargs) -> None:
+    def insert(self, session: Session, **kwargs) -> None:
         self._check_type_arg()
         session.execute(insert(self._type_arg).values(**kwargs))
 
@@ -102,7 +103,7 @@ class SyncBaseRepo(Generic[ModelT]):
 
         return count > 0
 
-    def exists(self, session: AsyncSession, id: int) -> bool:
+    def exists(self, session: Session, id: int) -> bool:
         self._check_type_arg()
 
         if id <= 0:
@@ -121,7 +122,7 @@ class SyncBaseRepo(Generic[ModelT]):
 
     def get_by_id(
         self,
-        session: AsyncSession,
+        session: Session,
         id: int,
         *,
         options: List[ExecutableOption] = [],
@@ -145,13 +146,13 @@ class SyncBaseRepo(Generic[ModelT]):
         else:
             raise RepoException("only support the model that extends AutoIncrementID")
 
-    def update_by_id(self, session: AsyncSession, id: int, **kwargs: Any) -> None:
+    def update_by_id(self, session: Session, id: int, **kwargs: Any) -> None:
         self._check_type_arg()
         session.execute(update(self._type_arg).where(self._type_arg.id == id).values(**kwargs))
 
     def fetch_list(
         self,
-        session: AsyncSession,
+        session: Session,
         query_config: QueryConfig,
     ) -> Tuple[Optional[int], List[ModelT]]:
         self._check_type_arg()
@@ -193,7 +194,7 @@ class SyncBaseRepo(Generic[ModelT]):
             model_list = session.scalars(stmt)
             return None, list(model_list)
 
-    def remove_by_id(self, session: AsyncSession, id: int, delete_by: Optional[int] = None) -> None:
+    def remove_by_id(self, session: Session, id: int, delete_by: Optional[int] = None) -> None:
         self._check_type_arg()
 
         if issubclass(self._type_arg, SoftDelete):
@@ -261,7 +262,7 @@ class BaseRepo(Generic[ModelT]):
         id: int,
         *,
         options: List[ExecutableOption] = [],
-    ) -> ModelT:
+    ) -> Optional[ModelT]:
         self._check_type_arg()
 
         if id <= 0:

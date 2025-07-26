@@ -1,5 +1,5 @@
 from contextlib import AbstractAsyncContextManager
-from typing import Callable, Any
+from typing import Any, Callable, cast
 
 from loguru._logger import Logger
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,7 +35,7 @@ class UserService:
 
             return user.to_pydantic(UserViewModel)
 
-    async def edit_user(self, user_id: int, **kwargs:Any) -> UserViewModel:
+    async def edit_user(self, user_id: int, **kwargs: Any) -> UserViewModel:
         async with self.transaction_factory() as session:
             user_exists = await self.repo.exists(session, user_id)
             if not user_exists:
@@ -94,5 +94,5 @@ class UserService:
                 items=user_view_list,
                 page=user_list_query.page,
                 page_size=user_list_query.page_size,
-                total=count,
+                total=cast(int, count),
             )

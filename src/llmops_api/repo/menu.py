@@ -45,13 +45,13 @@ class FetchFirstLevelMenuByMenuQuery(Condition):
                 or_(
                     Menu.name.like(f"{self.menu_query.query}%"),
                     Menu.title.like(f"{self.menu_query.query}%"),
-                )
+                )  # type: ignore
             )
 
         if self.menu_query.menu_type is not None:
-            where.append(Menu.menu_type == self.menu_query.menu_type)
+            where.append(Menu.menu_type == self.menu_query.menu_type)  # type: ignore
 
-        return where
+        return where  # type: ignore
 
 
 class FetchSecondLevelMenuByMenuQuery(Condition):
@@ -67,13 +67,13 @@ class FetchSecondLevelMenuByMenuQuery(Condition):
                 or_(
                     Menu.name.like(f"{self.menu_query.query}%"),
                     Menu.title.like(f"{self.menu_query.query}%"),
-                )
+                )  # type: ignore
             )
 
         if self.menu_query.menu_type is not None:
-            where.append(Menu.menu_type == self.menu_query.menu_type)
+            where.append(Menu.menu_type == self.menu_query.menu_type)  # type: ignore
 
-        return where
+        return where  # type: ignore
 
 
 class MenuRepo(BaseRepo[Menu]):

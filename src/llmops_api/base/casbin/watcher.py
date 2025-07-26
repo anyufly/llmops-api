@@ -1,6 +1,6 @@
 import asyncio
 from contextlib import AbstractAsyncContextManager
-from typing import Annotated, Any, Callable, List
+from typing import Any, Callable, List, Optional, cast
 from uuid import uuid4
 
 from casbin import Model
@@ -10,13 +10,13 @@ from redis.asyncio import Redis
 
 
 class Message(BaseModel):
-    method: Annotated[str, Field(default="")]
-    local_id: Annotated[str, Field(default="")]
-    sec: Annotated[str, Field(default="")]
-    ptype: Annotated[str, Field(default="")]
-    field_index: Annotated[int, Field(default=-1)]
-    rules: Annotated[List[str | List[str]], Field(default_factory=list)]
-    model: Annotated[str, Field(default="")]
+    method: str = Field(default="")
+    local_id: str = Field(default="")
+    sec: str = Field(default="")
+    ptype: str = Field(default="")
+    field_index: int = Field(default=-1)
+    rules: List[str | List[str]] = Field(default_factory=list)
+    model: str = Field(default="")
 
 
 class RedisCasbinWatcher:
@@ -25,9 +25,9 @@ class RedisCasbinWatcher:
         publish_client_factory: Callable[..., AbstractAsyncContextManager[Redis]],
         logger: Logger,
         channel: str = "casbin",
-        subscribe_timeout=2,
-        callback: Callable[[str], Any] = None,
-        loop: asyncio.AbstractEventLoop = None,
+        subscribe_timeout: int = 2,
+        callback: Optional[Callable[[str], Any]] = None,
+        loop: Optional[asyncio.AbstractEventLoop] = None,
     ):
         self.local_id = str(uuid4())
         self.publish_client_factory = publish_client_factory
@@ -39,6 +39,7 @@ class RedisCasbinWatcher:
         self.callback = callback
         self.logger = logger
 
+    @staticmethod
     def default_callback(msg: str):
         print(f"callback: {msg}")
 
@@ -93,7 +94,7 @@ class RedisCasbinWatcher:
                 local_id=self.local_id,
                 sec=sec,
                 ptype=ptype,
-                rules=rule,
+                rules=cast(List[str | List[str]], rule),
             )
             async with self.publish_client_factory() as client:
                 return await client.publish(f"channel:{self.channel}", msg.model_dump_json())
@@ -105,7 +106,7 @@ class RedisCasbinWatcher:
                 local_id=self.local_id,
                 sec=sec,
                 ptype=ptype,
-                rules=rule,
+                rules=cast(List[str | List[str]], rule),
             )
             async with self.publish_client_factory() as client:
                 return await client.publish(f"channel:{self.channel}", msg.model_dump_json())
@@ -120,7 +121,7 @@ class RedisCasbinWatcher:
                 sec=sec,
                 ptype=ptype,
                 field_index=field_index,
-                rules=rule,
+                rules=cast(List[str | List[str]], rule),
             )
             async with self.publish_client_factory() as client:
                 return await client.publish(f"channel:{self.channel}", msg.model_dump_json())
@@ -143,7 +144,7 @@ class RedisCasbinWatcher:
                 local_id=self.local_id,
                 sec=sec,
                 ptype=ptype,
-                rules=rules,
+                rules=cast(List[str | List[str]], rules),
             )
             async with self.publish_client_factory() as client:
                 return await client.publish(self.channel, msg.model_dump_json())
@@ -155,7 +156,7 @@ class RedisCasbinWatcher:
                 local_id=self.local_id,
                 sec=sec,
                 ptype=ptype,
-                rules=rules,
+                rules=cast(List[str | List[str]], rules),
             )
             async with self.publish_client_factory() as client:
                 return await client.publish(f"channel:{self.channel}", msg.model_dump_json())
@@ -165,8 +166,8 @@ async def new_watcher(
     publish_client_factory: Callable[..., AbstractAsyncContextManager[Redis]],
     logger: Logger,
     channel: str = "casbin",
-    subscribe_timeout=2,
-    callback=None,
+    subscribe_timeout: int = 2,
+    callback: Optional[Callable[[str], Any]] = None,
 ) -> RedisCasbinWatcher:
     watcher = RedisCasbinWatcher(
         publish_client_factory,

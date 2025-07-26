@@ -20,8 +20,8 @@ class QwenEmbedding:
         documents: List[str],
         *,
         dimension: int = 1024,
-        model="text-embedding-v4",
-        output_type="dense",
+        model: str = "text-embedding-v4",
+        output_type: str = "dense",
     ):
         resp = TextEmbedding.call(
             model=model,
@@ -46,8 +46,8 @@ class QwenEmbedding:
         query: str,
         *,
         dimension: int = 1024,
-        model="text-embedding-v4",
-        output_type="dense",
+        model: str = "text-embedding-v4",
+        output_type: str = "dense",
     ) -> Tuple[List[float], int]:
         resp = TextEmbedding.call(
             model=model,

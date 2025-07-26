@@ -96,4 +96,4 @@ class UserListQuery(Paginator, Condition):
                     User.email.like(f"{self.query}%"),
                 )
             ]
-        return [True]
+        return [True]  # type: ignore

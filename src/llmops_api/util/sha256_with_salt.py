@@ -1,6 +1,7 @@
 import binascii
 import hashlib
 import os
+from typing import Optional
 
 
 def generate_salt(length: int = 16):
@@ -8,7 +9,7 @@ def generate_salt(length: int = 16):
     return os.urandom(length)
 
 
-def sha256_with_salt(target: str, salt: bytes = None):
+def sha256_with_salt(target: str, salt: Optional[bytes] = None):
     """对密码进行加盐哈希处理"""
     # 如果没有提供盐值，则生成新盐
     if salt is None:

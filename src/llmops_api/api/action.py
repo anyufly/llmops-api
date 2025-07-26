@@ -3,7 +3,7 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Path
 
-from llmops_api.base.response.base_response import Base, BaseResponse
+from llmops_api.base.response.base_response import BaseResponse, Empty
 from llmops_api.const.constant import SUCCESS_CODE
 from llmops_api.depends.auth import get_current_user_id
 from llmops_api.form.action import EditActionForm
@@ -37,7 +37,7 @@ async def get_action(
     "/{action_id}",
     dependencies=[Depends(get_current_user_id)],
     description="删除操作",
-    response_model=BaseResponse[Base],
+    response_model=BaseResponse[Empty],
 )
 @inject
 async def delete_action(
@@ -45,7 +45,7 @@ async def delete_action(
     action_id: Annotated[int, Path(description="操作ID")],
 ):
     await action_service.delete_action(action_id)
-    return BaseResponse[Base](code=SUCCESS_CODE, msg="删除操作成功", data={})
+    return BaseResponse[Empty](code=SUCCESS_CODE, msg="删除操作成功", data=Empty())
 
 
 @router.put(
