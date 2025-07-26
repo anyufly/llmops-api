@@ -126,7 +126,7 @@ class SyncBaseRepo(Generic[ModelT]):
         id: int,
         *,
         options: List[ExecutableOption] = [],
-    ) -> ModelT:
+    ) -> Optional[ModelT]:
         self._check_type_arg()
 
         if id <= 0:
