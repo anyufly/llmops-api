@@ -67,7 +67,7 @@ class RetrievalRecordChunks(Base, AutoIncrementID):
 
     record: Mapped[RetrievalRecord] = relationship(
         foreign_keys=[record_id],
-        back_populates="documents",
+        back_populates="chunks",
         primaryjoin="remote(RetrievalRecord.id) == RetrievalRecordChunks.record_id",
     )
 
@@ -90,6 +90,7 @@ class RetrievalRecordChunks(Base, AutoIncrementID):
     )
 
     document: Mapped["KnowledgeDocument"] = relationship(
+        foreign_keys=[document_id],
         primaryjoin="remote(KnowledgeDocument.id) == RetrievalRecordChunks.document_id",
     )
 
@@ -101,7 +102,6 @@ class RetrievalRecordChunks(Base, AutoIncrementID):
 
     knowledge: Mapped[Knowledge] = relationship(
         foreign_keys=[knowledge_id],
-        back_populates="documents",
         primaryjoin="remote(Knowledge.id) == RetrievalRecordChunks.knowledge_id",
     )
 

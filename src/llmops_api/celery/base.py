@@ -1,7 +1,7 @@
 from celery import Celery
 
-from llmops_api.base.celery.serializer import register_msgpack_with_pydantic
 from llmops_api.base.container.container import init_celery_container
+from llmops_api.celery.serializer import register_msgpack_with_pydantic
 
 container = init_celery_container()
 

@@ -1,15 +1,32 @@
 import io
 import sys
-from typing import Any, Callable, Dict, List, cast
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from langchain_core.documents.base import Document
 from langchain_unstructured import UnstructuredLoader
-from pydantic import RootModel
+from pydantic import BaseModel, Field, RootModel
 from unstructured.cleaners.core import clean_extra_whitespace
 from urlextract import URLExtract
 
 from llmops_api.llm.text_splitter.charater import RecursiveCharacterTextSplitter
-from llmops_api.service.document import DocumentFile, DocumentFileSplitConfig
+
+# from llmops_api.service.document import DocumentFile, DocumentFileSplitConfig
+
+
+class DocumentFile(BaseModel):
+    knowledge_id: int
+    document_id: Optional[int]
+    filename: str
+    content: bytes
+
+
+class DocumentFileSplitConfig(BaseModel):
+    separators: Optional[str] = Field(default=None)
+    chunk_size: Optional[int] = Field(default=None, ge=100)
+    chunk_overlap: Optional[int] = Field(default=None, ge=0)
+    remove_extra_whitespace: bool = False
+    remove_url_and_email: bool = False
+    is_separator_regex: bool = False
 
 
 class DocumentFileList(RootModel):
@@ -32,7 +49,7 @@ def remove_url_and_email(text: str) -> str:
     return text
 
 
-def load_document(self, file: DocumentFile, config: DocumentFileSplitConfig) -> Document:
+def load_document(file: DocumentFile, config: DocumentFileSplitConfig) -> Document:
     post_processors = []
 
     if config.remove_extra_whitespace:
@@ -70,7 +87,7 @@ def load_document(self, file: DocumentFile, config: DocumentFileSplitConfig) -> 
     return document
 
 
-def split_document(self, document: Document, config: DocumentFileSplitConfig) -> List[Document]:
+def split_document(document: Document, config: DocumentFileSplitConfig) -> List[Document]:
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=config.chunk_size,
         chunk_overlap=config.chunk_overlap,
@@ -81,5 +98,9 @@ def split_document(self, document: Document, config: DocumentFileSplitConfig) ->
     return splitter.split_documents([document])
 
 
-def save_document_chunk(self, knowledge_id: int, document_id: int, documents: List[Document]):
+def save_document_chunk(knowledge_id: int, document_id: int, documents: List[Document]):
+    pass
+
+
+if __name__ == "__main__":
     pass

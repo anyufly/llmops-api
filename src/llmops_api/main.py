@@ -59,6 +59,11 @@ app.add_middleware(
 # 添加路由
 add_routers(app)
 
-# uvicorn src.llmops_api.main:app --host 0.0.0.0 --port 8080 --workers 8
-if __name__ == "__main__":
+
+def main():
     uvicorn.run(app, host="0.0.0.0", port=8080)
+
+
+# uv run uvicorn llmops_api.main:app --host 0.0.0.0 --port 8080 --workers 8
+if __name__ == "__main__":
+    main()
